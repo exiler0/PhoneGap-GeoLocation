@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 100% }
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsmaDaQI6tcMcFGlULFlm0HIj6MwboC7o&sensor=true">
+    </script>
+    <script type="text/javascript">
+    	var lat = '0.0';
+    	var lon = '0.0';
+    	var map;
+	    function initialize()
+	    {
+	    	var initialLocation = new google.maps.LatLng(28.620945, 77.081808);
+	        var mapOptions = {center: initialLocation, zoom: 8};
+	        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	        
+	        var marker = new google.maps.Marker(
+	        {
+		    	position: initialLocation,
+		    	map: map,
+		    	title: 'Click to zoom'
+		  	});
+		  	
+		  	
+		  // Add 5 markers to the map at random locations.
+		  var southWest = new google.maps.LatLng(-31.203405,125.244141);
+		  var northEast = new google.maps.LatLng(-25.363882,131.044922);
+		  var bounds = new google.maps.LatLngBounds(southWest,northEast);
+		  map.fitBounds(bounds);
+		  var lngSpan = northEast.lng() - southWest.lng();
+		  var latSpan = northEast.lat() - southWest.lat();
+		  for (var i = 0; i < 5; i++) {
+		    var location = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		        southWest.lng() + lngSpan * Math.random());
+		    var marker = new google.maps.Marker({
+		        position: location,
+		        map: map
+		    });
+		    var j = i + 1;
+		    marker.setTitle(j.toString());
+		    attachSecretMessage(marker, i);
+		  }
+		}
+
+		// The five markers show a secret message when clicked
+		// but that message is not within the marker's instance data.
+		function attachSecretMessage(marker, number) {
+		  var message = ["This","is","the","secret","message"];
+		  var infowindow = new google.maps.InfoWindow(
+		      { content: message[number],
+		        size: new google.maps.Size(50,50)
+		      });
+		  google.maps.event.addListener(marker, 'click', function() {
+		    infowindow.open(map,marker);
+		  });
+	    }
+	    google.maps.event.addDomListener(window, 'load', initialize);
+	    
+	    function loaded()
+	    {
+	    	var options={maximumAge: 30000, timeout: 15000, enableHighAccuracy: false}; 
+    		navigator.geolocation.getCurrentPosition(success,error,options);
+		}
+		function success(position)
+		{
+		lat = position.coords.latitude;
+		lon = position.coords.longitude;
+			 alert('Latitude: '          + position.coords.latitude          + '\n' +
+			          'Longitude: '         + position.coords.longitude         + '\n' +
+			          'Altitude: '          + position.coords.altitude          + '\n' +
+			          'Accuracy: '          + position.coords.accuracy          + '\n' +
+			          'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+			          'Heading: '           + position.coords.heading           + '\n' +
+			          'Speed: '             + position.coords.speed             + '\n' +
+			          'Timestamp: '         + position.timestamp                + '\n');
+			          
+			          placeMarker(position);
+		}
+		
+		function error()
+		{
+		    alert("error");
+		}
+		
+		function placeMarker(position)
+		{
+		  var marker = new google.maps.Marker(
+		  {
+		      position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+		      map: map, 
+		      zoom : 10
+		  });
+		}
+    </script>
+  </head>
+  <body>
+  <br>
+  	<div id="btnMyLocation" >
+  		<button name="currentLocation" onclick="loaded()" >Set Current Location on Map</button>
+  	</div>
+  	<br>
+    <div id="map-canvas"/>
+  </body>
+</html>
